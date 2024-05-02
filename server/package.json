@@ -1,0 +1,8 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "A backend of this blog",
+  "main": "index.js",
+  "author": "WaffoKom",
+  "license": "MIT"
+}
