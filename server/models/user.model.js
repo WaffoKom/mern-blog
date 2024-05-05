@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
   // Je met en commentaire au cas ou un systeme prefererait id a _id
   // id: { type: mongoose.Schema.Types.ObjectId, required: true, auto: true },
-  name: {
+  username: {
     type: String,
     required: true,
     unique: true,
@@ -20,7 +20,9 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     select: false,
   },
-  timestamps: true,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+
   // role: { type: String, enum: ["admin", "user"] },
 });
 
