@@ -46,10 +46,10 @@ export async function signin(req, res) {
       res.status(400).send({ message: " user is not registered !" });
       return;
     }
-    // const validPassword = await bcrypt.compare(password, user.password);
-    // if (!validPassword) {
-    //   return res.status(400).send({ message: "password is incorrect !" });
-    // }
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(400).send({ message: "password is incorrect !" });
+    }
     const token = jwt.sign(
       { email: user.email, userId: user._id },
       process.env.KEY,
