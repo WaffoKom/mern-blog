@@ -50,6 +50,13 @@ export async function signin(req, res) {
     if (!validPassword) {
       return res.status(400).send({ message: "password is incorrect !" });
     }
+
+    const userWithoutPassword = {
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      // Autres propriétés de l'utilisateur que vous souhaitez inclure
+    };
     const token = jwt.sign(
       { email: user.email, userId: user._id },
       process.env.KEY,
@@ -63,7 +70,7 @@ export async function signin(req, res) {
       .cookie("access_token", token, {
         httpOnly: true,
       })
-      .send({ message: "Login Successfull", user, token });
+      .send({ message: "Login Successfull", user: userWithoutPassword });
   } catch (error) {
     res.status(500).send({
       success: false,
