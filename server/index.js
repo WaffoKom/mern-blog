@@ -1,20 +1,29 @@
+import { connectToDB } from "./database/db.connect.js";
+import { userRoutes } from "./routes/user.route.js";
+import { authRoutes } from "./routes/auth.route.js";
+import cookieParser from "cookie-parser";
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+
 dotenv.config();
 const app = express();
+app.use(express.json());
 const PORT = process.env.PORT || 3000;
-
+app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [process.env.LOCALHOST],
     credentials: true,
   })
 );
+app.use(cookieParser());
 async function main() {
   // ... (Code de configuration de l'application)
-
-  //   await connectToDB();
+  app.use("/api/user", userRoutes);
+  app.use("/api/auth", authRoutes);
+  await connectToDB();
 
   // ... (Démarrage du serveur)
 
