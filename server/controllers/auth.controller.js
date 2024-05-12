@@ -59,7 +59,7 @@ export async function signin(req, res) {
     //   // Autres propriétés de l'utilisateur que vous souhaitez inclure
     // };
     const token = jwt.sign(
-      { email: user.email, userId: user._id },
+      { email: user.email, userId: user._id, isAdmin: user.isAdmin },
       process.env.KEY,
       {
         expiresIn: "24h",
@@ -87,7 +87,10 @@ export async function google(req, res) {
   try {
     const user = await userModel.findOne({ email });
     if (user) {
-      const token = jwt.sign({ id: user._id }, process.env.KEY);
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.KEY
+      );
       const { password, ...rest } = user._doc;
       res
         .status(200)
