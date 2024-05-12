@@ -15,6 +15,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signoutSuccess,
 } from "../redux/user/userSlice.js";
 import { useDispatch } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
@@ -147,6 +148,21 @@ export default function DashProfile() {
       dispatch(deleteUserFailure(error.message));
     }
   };
+  const handleSignout = async () => {
+    try {
+      const res = await fetch("/api/user/signout/", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signoutSuccess());
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   console.log(formData);
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
@@ -229,7 +245,9 @@ export default function DashProfile() {
         >
           Delete Account
         </span>
-        <span className="cursor-pointer font-semibold">Sign Out</span>
+        <span className="cursor-pointer font-semibold" onClick={handleSignout}>
+          Sign Out
+        </span>
       </div>
       {updateUserSuccess && (
         <Alert color="success" className="mt-5">
