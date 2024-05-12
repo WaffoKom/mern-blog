@@ -6,13 +6,13 @@ export const test = (req, res) => {
 };
 
 export async function updateUser(req, res) {
-  // if (req.user.id !== req.params.userId) {
-  //   return res.status(403).json("You are not allowed to update this user");
-  // }
+  if (req.user.userId !== req.params.userId) {
+    return res.status(403).json("You are not allowed to update this user");
+  }
 
   if (req.body.password) {
     if (body.password.length < 6) {
-      return res.status(400).send("Password must be at least 6 characters");
+      return res.status(400).json("Password must be at least 6 characters");
     }
     req.body.password = bcrypt.hash(req.body.password, 10);
   }
@@ -21,19 +21,19 @@ export async function updateUser(req, res) {
     if (req.body.username.length < 7 || req.body.username.length > 20) {
       return res
         .status(400)
-        .send("Username must be between 7 and 20 characters");
+        .json("Username must be between 7 and 20 characters");
     }
   }
   if (req.body.username.includes(" ")) {
-    return res.status(400).send("Username cannot contain spaces");
+    return res.status(400).json("Username cannot contain spaces");
   }
   if (req.body.username !== req.body.username.toLowerCase()) {
-    return res.status(400).send("Username must be lowercase");
+    return res.status(400).json("Username must be lowercase");
   }
   if (!req.body.username.match(/^[a-zA-Z0-9]+$/)) {
     return res
       .status(400)
-      .send("Username must be contain only letters  and numbers");
+      .json("Username must be contain only letters  and numbers");
   }
   try {
     const updatedUser = await userModel.findByIdAndUpdate(
@@ -58,9 +58,9 @@ export async function updateUser(req, res) {
 }
 
 export const deleteUser = async (req, res) => {
-  // if (req.user.id !== req.params.userId) {
-  //   return res.status(403).json("You are not allowed to delete this user");
-  // }
+  if (req.user.userId !== req.params.userId) {
+    return res.status(403).json("You are not allowed to delete this user");
+  }
 
   try {
     const deletedUser = await userModel.findByIdAndDelete(req.params.userId);
@@ -74,5 +74,16 @@ export const deleteUser = async (req, res) => {
     res
       .status(500)
       .json({ message: "Erreur interne du serveur", error: error.message });
+  }
+};
+
+export const signout = (req, res) => {
+  try {
+    res
+      .clearCookie("access_token")
+      .status(200)
+      .json("User has been signed out");
+  } catch (error) {
+    res.status(500).send({ message: "Intern Error", error: error.message });
   }
 };
