@@ -1,9 +1,75 @@
-import { FileInput, Select, TextInput, Button } from "flowbite-react";
-import React from "react";
+import {
+  getDownloadURL,
+  getStorage,
+  uploadBytesResumable,
+  ref,
+} from "firebase/storage";
+import { app } from "../firebase.js";
+import { FileInput, Select, TextInput, Button, Alert } from "flowbite-react";
+import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useDispatch } from "react-redux";
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 export default function CreatePost() {
+  const [file, setFile] = useState(null);
+  const [fileUrl, setFileUrl] = useState(null);
+  const [fileUPloadProgress, setFileUploadProgress] = useState(null);
+  const [fileUPloadError, setFileUploadError] = useState(null);
+  const [formData, setFormData] = useState({});
+  const [fileUploading, setFileUploading] = useState(false);
+
+  const handleUploadImage = async () => {
+    try {
+      if (!file) {
+        setFileUploadError("Please select an image");
+        return;
+      }
+      setFileUploading(true);
+      setFileUploadError(null);
+      const storage = getStorage(app);
+      const fileName = `${file.name}-${new Date().getTime()}`;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setFileUploadProgress(progress.toFixed(0));
+          // console.log(`Upload is ${progress.toFixed(0)} done`);
+        },
+        (error) => {
+          setFileUploadError(
+            "couldn't upload image (File must be less than 4MB)"
+          );
+          setFileUploadProgress(null);
+          setFile(null);
+          setFileUrl(null);
+          setFileUploading(false);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setFileUrl(downloadURL);
+            setFileUploading(false);
+            setFileUploadProgress(null);
+            setFileUploadError(null);
+            setFormData({ ...formData, image: downloadURL });
+          });
+        }
+      );
+    } catch (error) {
+      setFileUploadError({
+        message: "Image upload failed",
+        error: error.message,
+      });
+      setFileUploadProgress(null);
+      console.log(error);
+    }
+  };
+
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
@@ -24,17 +90,39 @@ export default function CreatePost() {
           </Select>
         </div>
         <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
-          <FileInput type="file" accept="image/*" />
+          <FileInput
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
           <Button
             type="button"
             gradientDuoTone="purpleToBlue"
             size="sm"
             outline
+            onClick={handleUploadImage}
+            disabled={fileUPloadProgress}
           >
-            {" "}
-            Upload image
+            {fileUPloadProgress ? (
+              <div className="w-16 h-16">
+                <CircularProgressbar
+                  value={fileUPloadProgress}
+                  text={`${fileUPloadProgress || 0}%`}
+                />
+              </div>
+            ) : (
+              "Upload Image"
+            )}
           </Button>
         </div>
+        {fileUPloadError && <Alert color="failure">{fileUPloadError}</Alert>}
+        {formData.image && (
+          <img
+            src={formData.image}
+            alt="upload"
+            className="w-full h-72 object-cover"
+          />
+        )}
         <ReactQuill
           theme="snow"
           placeholder="Write something..."
