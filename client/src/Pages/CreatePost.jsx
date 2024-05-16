@@ -7,6 +7,7 @@ import {
 import { app } from "../firebase.js";
 import { FileInput, Select, TextInput, Button, Alert } from "flowbite-react";
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useDispatch } from "react-redux";
@@ -14,13 +15,14 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 export default function CreatePost() {
+  const navigate = useNavigate();
   const [file, setFile] = useState(null);
-  const [fileUrl, setFileUrl] = useState(null);
   const [fileUPloadProgress, setFileUploadProgress] = useState(null);
   const [fileUPloadError, setFileUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [fileUploading, setFileUploading] = useState(false);
+  const [PublishError, setPublishError] = useState(null);
 
+  console.log(formData);
   const handleUploadImage = async () => {
     try {
       if (!file) {
@@ -47,12 +49,11 @@ export default function CreatePost() {
           );
           setFileUploadProgress(null);
           setFile(null);
-          setFileUrl(null);
+
           setFileUploading(false);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setFileUrl(downloadURL);
             setFileUploading(false);
             setFileUploadProgress(null);
             setFileUploadError(null);
@@ -69,11 +70,33 @@ export default function CreatePost() {
       console.log(error);
     }
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/post/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPublishError(data.message);
+        return;
+      } else if (res.ok) {
+        setPublishError(null);
+        navigate(`/post/${data.slug}`);
+      }
+    } catch (error) {
+      setFileUploadError("Something went wrong");
+    }
+  };
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
             type="text"
@@ -81,8 +104,15 @@ export default function CreatePost() {
             required
             id="title"
             className="flex-1"
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
-          <Select>
+          <Select
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+          >
             <option value="uncategorized">Redux</option>
             <option value="javascript">Javascript</option>
             <option value="reactjs">ReactJS</option>
@@ -114,8 +144,8 @@ export default function CreatePost() {
               "Upload Image"
             )}
           </Button>
+          {fileUPloadError && <Alert color="failure">{fileUPloadError}</Alert>}
         </div>
-        {fileUPloadError && <Alert color="failure">{fileUPloadError}</Alert>}
         {formData.image && (
           <img
             src={formData.image}
@@ -128,10 +158,18 @@ export default function CreatePost() {
           placeholder="Write something..."
           className="h-72 mb-12"
           required
+          onChange={(value) => {
+            setFormData({ ...formData, content: value });
+          }}
         />
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
+        {PublishError && (
+          <Alert className="mt-5" color="failure">
+            {PublishError}
+          </Alert>
+        )}
       </form>
     </div>
   );
