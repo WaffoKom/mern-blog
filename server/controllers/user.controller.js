@@ -6,7 +6,7 @@ export const test = (req, res) => {
 };
 
 export async function updateUser(req, res) {
-  if (req.user.userId !== req.params.userId) {
+  if (req.user.id !== req.params.userId) {
     return res.status(403).json("You are not allowed to update this user");
   }
 
@@ -58,7 +58,7 @@ export async function updateUser(req, res) {
 }
 
 export const deleteUser = async (req, res) => {
-  if (req.user.userId !== req.params.userId) {
+  if (req.user.id !== req.params.userId) {
     return res.status(403).json("You are not allowed to delete this user");
   }
 
@@ -86,4 +86,39 @@ export const signout = (req, res) => {
   } catch (error) {
     res.status(500).send({ message: "Intern Error", error: error.message });
   }
+};
+
+export const getUsers = async (req, res) => {
+  if (!req.user.isAdmin) {
+    return res.status(403).json("You are not allowed to see all users");
+  }
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortDirection = req.query.sort || "asc" ? 1 : -1;
+
+    const users = await userModel
+      .find()
+      .sort({ createdAt: sortDirection })
+      .skip(startIndex)
+      .limit(limit);
+
+    const usersWithoutPassword = users.map((user) => {
+      const { password, ...rest } = user._doc;
+      return rest;
+    });
+    const totalUsers = await userModel.countDocuments();
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+    const lastMonthUsers = await userModel.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
+    res
+      .status(200)
+      .json({ users: usersWithoutPassword, totalUsers, lastMonthUsers });
+  } catch (error) {}
 };
