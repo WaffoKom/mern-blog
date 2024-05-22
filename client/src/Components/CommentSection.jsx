@@ -59,10 +59,10 @@ export default function CommentSection({ postId }) {
     }
 
     try {
-      const res = await fetch(`/api/comment/likeComment/${commentId}`);
-      {
-        method: "PUT";
-      }
+      const res = await fetch(`/api/comment/likeComment/${commentId}`, {
+        method: "PUT",
+      });
+
       if (res.ok) {
         const data = await res.json();
         setComments(
@@ -80,6 +80,13 @@ export default function CommentSection({ postId }) {
     } catch (error) {
       throw error;
     }
+  };
+  const handleEdit = async (comment, editedContent) => {
+    setComments(
+      comments.map((c) =>
+        c._id === comment._id ? { ...c, content: editedContent } : c
+      )
+    );
   };
   return (
     <div className="max-w-2xl mx-auto w-full p-3">
@@ -117,6 +124,7 @@ export default function CommentSection({ postId }) {
             maxLength="300"
             onChange={(e) => setComment(e.target.value)}
             value={comment}
+            className="mb-2"
           />
           <div className="">
             <p className="text-gray-500 text-xs">
@@ -144,7 +152,12 @@ export default function CommentSection({ postId }) {
             </div>
           </div>
           {comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} onLike={handleLike} />
+            <Comment
+              key={comment._id}
+              comment={comment}
+              onLike={handleLike}
+              onEdit={handleEdit}
+            />
           ))}
         </>
       )}
