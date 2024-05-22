@@ -3,6 +3,7 @@ import {
   createComment,
   getPostComments,
   likeComment,
+  editComment,
 } from "../controllers/comment.controller.js";
 import { verifyToken } from "../utils/verifyUser.js";
 
@@ -18,5 +19,6 @@ router.get("/getPostComments/:postId", getPostComments);
 
 // PUT REQUEST
 router.put("/likeComment/:commentId", verifyToken, likeComment);
+router.put("/editComment/:commentId", verifyToken, editComment);
 
 export { router as commentRoutes };
