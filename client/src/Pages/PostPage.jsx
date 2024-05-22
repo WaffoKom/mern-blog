@@ -11,7 +11,7 @@ export default function PostPage() {
   const [post, setPost] = useState(null);
   console.log(error);
   useEffect(() => {
-    console.log(postSlug);
+    // console.log(postSlug);
     const fetchPost = async () => {
       try {
         const res = await fetch(`/api/post/getPosts?slug=${postSlug}`);
@@ -28,6 +28,7 @@ export default function PostPage() {
       } catch (error) {
         setError(true);
         setLoading(false);
+        console.log(error.message);
       }
     };
     fetchPost();
@@ -70,7 +71,7 @@ export default function PostPage() {
       <div className="max-w-4xl mx-auto w-full">
         <CallToAction />
       </div>
-      <CommentSection postId={post._id} />
+      post && <CommentSection postId={post._id} />
     </main>
   );
 }
