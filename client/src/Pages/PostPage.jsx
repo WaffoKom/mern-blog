@@ -1,38 +1,59 @@
 import { Button, Spinner } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import CallToAction from "../Components/CallToAction.jsx";
 import CommentSection from "../Components/CommentSection.jsx";
+import PostCard from "../Components/PostCard.jsx";
 
 export default function PostPage() {
   const { postSlug } = useParams();
+  // const postSlugRef = useRef(postSlug);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
-  console.log(error);
+  const [recentPosts, setRecentPosts] = useState(null);
+  console.log(error, postSlug);
   useEffect(() => {
-    // console.log(postSlug);
-    const fetchPost = async () => {
-      try {
+    // postSlugRef.current = postSlug;
+    try {
+      const fetchPost = async () => {
+        setLoading(true);
         const res = await fetch(`/api/post/getPosts?slug=${postSlug}`);
         const data = await res.json();
         if (!res.ok) {
           setError(true);
           setLoading(false);
           return;
-        } else if (res.ok) {
+        }
+        if (res.ok) {
           setPost(data.posts[0]);
           setLoading(false);
           setError(false);
         }
-      } catch (error) {
-        setError(true);
-        setLoading(false);
-        console.log(error.message);
-      }
-    };
-    fetchPost();
+      };
+
+      fetchPost();
+    } catch (error) {
+      setError(true);
+      setLoading(false);
+    }
   }, [postSlug]);
+
+  useEffect(() => {
+    try {
+      const fetchRecentPosts = async () => {
+        const res = await fetch(`/api/post/getPosts?limit=3`);
+        const data = await res.json();
+        if (res.ok) {
+          setRecentPosts(data.posts);
+        }
+      };
+      fetchRecentPosts();
+    } catch (error) {
+      console.error(error.message);
+    }
+  }, []);
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -71,7 +92,14 @@ export default function PostPage() {
       <div className="max-w-4xl mx-auto w-full">
         <CallToAction />
       </div>
-      post && <CommentSection postId={post._id} />
+      {post && <CommentSection postId={post._id} />}
+      <div className="flex flex-col justify-center items-center mb-5">
+        <h1 className="text-xl mt-5">Recent articles</h1>
+        <div className="flex flex-wrap gap-5 justify-center">
+          {recentPosts &&
+            recentPosts.map((post) => <PostCard key={post._id} post={post} />)}
+        </div>
+      </div>
     </main>
   );
 }
