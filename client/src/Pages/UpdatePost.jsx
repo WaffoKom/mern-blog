@@ -1,30 +1,30 @@
+import { Alert, Button, FileInput, Select, TextInput } from "flowbite-react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   getDownloadURL,
   getStorage,
-  uploadBytesResumable,
   ref,
+  uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase.js";
-import { FileInput, Select, TextInput, Button, Alert } from "flowbite-react";
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function UpdatePost() {
-  const { postId } = useParams();
-  const navigate = useNavigate();
-
   const [file, setFile] = useState(null);
-  const [fileUPloadProgress, setFileUploadProgress] = useState(null);
-  const [fileUPloadError, setFileUploadError] = useState(null);
+  const [imageUploadProgress, setImageUploadProgress] = useState(null);
+  const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [PublishError, setPublishError] = useState(null);
-  // console.log(formData);
+  const [publishError, setPublishError] = useState(null);
+  const { postId } = useParams();
+
+  const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
+
   useEffect(() => {
     try {
       const fetchPost = async () => {
@@ -32,30 +32,30 @@ export default function UpdatePost() {
         const data = await res.json();
         if (!res.ok) {
           console.log(data.message);
-          setFileUploadError(data.message);
+          setPublishError(data.message);
           return;
         }
         if (res.ok) {
-          setFileUploadError(null);
+          setPublishError(null);
           setFormData(data.posts[0]);
         }
       };
 
       fetchPost();
     } catch (error) {
-      throw error.message;
+      console.log(error.message);
     }
   }, [postId]);
-  const handleUploadImage = async () => {
+
+  const handleUpdloadImage = async () => {
     try {
       if (!file) {
-        setFileUploadError("Please select an image");
+        setImageUploadError("Please select an image");
         return;
       }
-      setFileUploading(true);
-      setFileUploadError(null);
+      setImageUploadError(null);
       const storage = getStorage(app);
-      const fileName = `${file.name}-${new Date().getTime()}`;
+      const fileName = new Date().getTime() + "-" + file.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on(
@@ -63,33 +63,23 @@ export default function UpdatePost() {
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setFileUploadProgress(progress.toFixed(0));
-          // console.log(`Upload is ${progress.toFixed(0)} done`);
+          setImageUploadProgress(progress.toFixed(0));
         },
         (error) => {
-          setFileUploadError(
-            "couldn't upload image (File must be less than 4MB)"
-          );
-          setFileUploadProgress(null);
-          setFile(null);
-
-          setFileUploading(false);
+          setImageUploadError("Image upload failed");
+          setImageUploadProgress(null);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setFileUploading(false);
-            setFileUploadProgress(null);
-            setFileUploadError(null);
+            setImageUploadProgress(null);
+            setImageUploadError(null);
             setFormData({ ...formData, image: downloadURL });
           });
         }
       );
     } catch (error) {
-      setFileUploadError({
-        message: "Image upload failed",
-        error: error.message,
-      });
-      setFileUploadProgress(null);
+      setImageUploadError("Image upload failed");
+      setImageUploadProgress(null);
       console.log(error);
     }
   };
@@ -110,18 +100,19 @@ export default function UpdatePost() {
       if (!res.ok) {
         setPublishError(data.message);
         return;
-      } else if (res.ok) {
+      }
+
+      if (res.ok) {
         setPublishError(null);
         navigate(`/post/${data.slug}`);
       }
     } catch (error) {
-      setFileUploadError("Something went wrong");
+      setPublishError("Something went wrong");
     }
   };
-
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
-      <h1 className="text-center text-3xl my-7 font-semibold">Update a post</h1>
+      <h1 className="text-center text-3xl my-7 font-semibold">Update post</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
@@ -137,14 +128,14 @@ export default function UpdatePost() {
           />
           <Select
             onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
+              setFormData({ ...formData, category: e.target.value })
             }
             value={formData.category}
           >
-            <option value="uncategorized">Redux</option>
-            <option value="javascript">Javascript</option>
-            <option value="reactjs">ReactJS</option>
-            <option value="nextjs">NextJS</option>
+            <option value="uncategorized">Select a category</option>
+            <option value="javascript">JavaScript</option>
+            <option value="reactjs">React.js</option>
+            <option value="nextjs">Next.js</option>
           </Select>
         </div>
         <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
@@ -158,22 +149,22 @@ export default function UpdatePost() {
             gradientDuoTone="purpleToBlue"
             size="sm"
             outline
-            onClick={handleUploadImage}
-            disabled={fileUPloadProgress}
+            onClick={handleUpdloadImage}
+            disabled={imageUploadProgress}
           >
-            {fileUPloadProgress ? (
+            {imageUploadProgress ? (
               <div className="w-16 h-16">
                 <CircularProgressbar
-                  value={fileUPloadProgress}
-                  text={`${fileUPloadProgress || 0}%`}
+                  value={imageUploadProgress}
+                  text={`${imageUploadProgress || 0}%`}
                 />
               </div>
             ) : (
               "Upload Image"
             )}
           </Button>
-          {fileUPloadError && <Alert color="failure">{fileUPloadError}</Alert>}
         </div>
+        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
         {formData.image && (
           <img
             src={formData.image}
@@ -183,20 +174,20 @@ export default function UpdatePost() {
         )}
         <ReactQuill
           theme="snow"
+          value={formData.content}
           placeholder="Write something..."
           className="h-72 mb-12"
           required
           onChange={(value) => {
             setFormData({ ...formData, content: value });
           }}
-          value={formData.content}
         />
         <Button type="submit" gradientDuoTone="purpleToPink">
-          Update Post
+          Update post
         </Button>
-        {PublishError && (
+        {publishError && (
           <Alert className="mt-5" color="failure">
-            {PublishError}
+            {publishError}
           </Alert>
         )}
       </form>
