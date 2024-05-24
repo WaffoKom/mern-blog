@@ -14,7 +14,9 @@ export const createComment = async (req, res) => {
     await newComment.save();
     res.status(200).json(newComment);
   } catch (error) {
-    throw error;
+    return res
+      .status(404)
+      .json({ message: "Intern Error", error: error.message });
   }
 };
 
@@ -25,7 +27,40 @@ export const getPostComments = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).json(comments);
   } catch (error) {
-    throw error;
+    return res
+      .status(404)
+      .json({ message: "Intern Error", error: error.message });
+  }
+};
+
+export const getComments = async (req, res) => {
+  if (!req.user.isAdmin) {
+    return res.status(403).json("You are not allowed to see all comments");
+  }
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortDirection = req.query.sort || "desc" ? -1 : 1;
+
+    const comments = await commentModel
+      .find()
+      .sort({ updatedAt: sortDirection })
+      .skip(startIndex)
+      .limit(limit);
+
+    const totalComments = await commentModel.countDocuments();
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+    const lastMonthComments = await commentModel.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
+    res.status(200).json({ comments, totalComments, lastMonthComments });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -46,7 +81,9 @@ export const likeComment = async (req, res) => {
     await comment.save();
     res.status(200).json(comment);
   } catch (error) {
-    throw error;
+    return res
+      .status(404)
+      .json({ message: "Intern Error", error: error.message });
   }
 };
 
@@ -68,7 +105,9 @@ export const editComment = async (req, res) => {
     );
     res.status(200).json(editedComment);
   } catch (error) {
-    throw error;
+    return res
+      .status(404)
+      .json({ message: "Intern Error", error: error.message });
   }
 };
 
@@ -84,6 +123,8 @@ export const deleteComment = async (req, res) => {
     await commentModel.findByIdAndDelete(req.params.commentId);
     res.status(200).json("Comment has been deleted");
   } catch (error) {
-    throw error;
+    return res
+      .status(404)
+      .json({ message: "Intern Error", error: error.message });
   }
 };
