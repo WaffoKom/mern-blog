@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const postSchema = new mongoose.Schema({
   userId: {
     type: String,
+    unique: false, // Le modèle "User" doit correspondre à votre modèle d'utilisateur
     required: true,
   },
   content: {

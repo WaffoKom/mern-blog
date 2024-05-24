@@ -40,7 +40,7 @@ export const getComments = async (req, res) => {
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 10;
-    const sortDirection = req.query.sort || "desc" ? -1 : 1;
+    const sortDirection = req.query.sort === "desc" ? -1 : 1;
 
     const comments = await commentModel
       .find()

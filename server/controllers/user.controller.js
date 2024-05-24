@@ -48,7 +48,7 @@ export async function updateUser(req, res) {
       },
       { new: true }
     );
-    const { password, ...rest } = updatedUser._doc;
+    const { password, ...rest } = updatedUser.toObject();
     res.status(200).send(rest);
   } catch (error) {
     return res
@@ -88,14 +88,14 @@ export const signout = (req, res) => {
   }
 };
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   if (!req.user.isAdmin) {
     return res.status(403).json("You are not allowed to see all users");
   }
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
-    const limit = parseInt(req.query.limit) || 10;
-    const sortDirection = req.query.sort || "asc" ? 1 : -1;
+    const limit = parseInt(req.query.limit) || 9;
+    const sortDirection = req.query.sort === "asc" ? 1 : -1;
 
     const users = await userModel
       .find()
@@ -104,7 +104,7 @@ export const getUsers = async (req, res) => {
       .limit(limit);
 
     const usersWithoutPassword = users.map((user) => {
-      const { password, ...rest } = user._doc;
+      const { password, ...rest } = user.toObject();
       return rest;
     });
     const totalUsers = await userModel.countDocuments();
@@ -121,19 +121,19 @@ export const getUsers = async (req, res) => {
       .status(200)
       .json({ users: usersWithoutPassword, totalUsers, lastMonthUsers });
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 
-export const getUser = async (req, res) => {
+export const getUser = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.params.userId);
     if (!user) {
       res.status(404).json("User not found !");
     }
-    const { password, ...rest } = user._doc;
+    const { password, ...rest } = user.toObject();
     res.status(200).json(rest);
   } catch (error) {
-    throw error;
+    next(error);
   }
 };

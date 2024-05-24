@@ -19,6 +19,6 @@ router.delete("/delete/:userId", verifyToken, deleteUser);
 router.post("/signout", signout);
 //GET REQUEST
 router.get("/test", test);
-router.get("/getUsers", verifyToken, getUser);
-router.get("/:userId", getUsers);
+router.get("/getUsers", verifyToken, getUsers);
+router.get("/:userId", getUser);
 export { router as userRoutes };

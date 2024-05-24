@@ -8,14 +8,14 @@ import { FaCheck, FaTimes } from "react-icons/fa";
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
-  const [showMore, setshowMore] = useState(true);
+  const [showMore, setShowMore] = useState(true);
   const [showModal, setshowModal] = useState(false);
   const [userIdToDelete, setuserIdToDelete] = useState("");
   console.log(users);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`/api/user/getUsers`);
+        const res = await fetch("/api/user/getUsers", { method: "GET" });
         const data = await res.json();
         console.log(data);
         if (res.ok) {
@@ -26,7 +26,7 @@ export default function DashUsers() {
         }
       } catch (error) {
         // console.log(error.message);
-        throw { message: "Intern Error", error: error.message };
+        console.error(error.message);
       }
     };
     if (currentUser.isAdmin) {
@@ -38,15 +38,15 @@ export default function DashUsers() {
     const startIndex = users.length;
     try {
       const res = await fetch(`/api/user/getUsers?startIndex=${startIndex}`);
-      const data = res.json();
+      const data = await res.json();
       if (res.ok) {
         setUsers((prev) => [...prev, ...data.users]);
         if (data.users.length < 9) {
-          setshowMore(false);
+          setShowMore(false);
         }
       }
     } catch (error) {
-      throw error;
+      console.error(error.message);
     }
   };
   const handleDeleteUser = async () => {
@@ -61,7 +61,7 @@ export default function DashUsers() {
       }
       setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
     } catch (error) {
-      throw error.message;
+      console.error(error.message);
     }
   };
   return (

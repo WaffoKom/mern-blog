@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import "react-circular-progressbar/dist/styles.css";
+import { Link } from "react-router-dom";
 
 export default function DashProfile() {
   const [imageFile, setImageFile] = useState(null);
@@ -36,7 +37,7 @@ export default function DashProfile() {
   // console.log(imageFileUPloadProgress, imageFileUPloadError);
   const filePickerRef = useRef();
   const dispatch = useDispatch();
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -234,9 +235,26 @@ export default function DashProfile() {
           defaultValue="************"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone="purpleToPink" outline>
-          Update
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToPink"
+          outline
+          disabled={loading || imageFileUploading}
+        >
+          {loading ? "Loading..." : "Update"}
         </Button>
+
+        {currentUser.isAdmin && (
+          <Link to="/create-post">
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Create a post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span

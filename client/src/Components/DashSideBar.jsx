@@ -3,6 +3,7 @@ import { Sidebar } from "flowbite-react";
 import {
   HiAnnotation,
   HiArrowSmRight,
+  HiChartPie,
   HiDocumentText,
   HiOutlineUserGroup,
   HiUser,
@@ -42,6 +43,18 @@ export default function DashSideBar() {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
+          {currentUser && currentUser.isAdmin && (
+            <Link to="/dashboard?tab=dashboardcomponents">
+              <Sidebar.Item
+                icon={HiChartPie}
+                active={tab === "dashboardcomponents" || !tab}
+                className="cursor-pointer"
+                as="div"
+              >
+                Dasboard
+              </Sidebar.Item>
+            </Link>
+          )}
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               active={tab === "profile"}
@@ -54,7 +67,7 @@ export default function DashSideBar() {
               Profile
             </Sidebar.Item>
           </Link>
-          {currentUser.isAdmin && (
+          {currentUser && currentUser.isAdmin && (
             <Link to="/dashboard?tab=posts">
               <Sidebar.Item
                 active={tab === "posts"}
@@ -66,7 +79,7 @@ export default function DashSideBar() {
               </Sidebar.Item>
             </Link>
           )}
-          {currentUser.isAdmin && (
+          {currentUser && currentUser.isAdmin && (
             <Link to="/dashboard?tab=comments">
               <Sidebar.Item
                 active={tab === "comments"}
@@ -78,7 +91,7 @@ export default function DashSideBar() {
               </Sidebar.Item>
             </Link>
           )}
-          {currentUser.isAdmin && (
+          {currentUser && currentUser.isAdmin && (
             <Link to="/dashboard?tab=users">
               <Sidebar.Item
                 active={tab === "users"}

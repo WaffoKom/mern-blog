@@ -22,7 +22,7 @@ export default function CreatePost() {
   const [formData, setFormData] = useState({});
   const [PublishError, setPublishError] = useState(null);
 
-  console.log(formData);
+  // console.log(formData);
   const handleUploadImage = async () => {
     try {
       if (!file) {
@@ -84,12 +84,14 @@ export default function CreatePost() {
       if (!res.ok) {
         setPublishError(data.message);
         return;
-      } else if (res.ok) {
+      }
+      if (res.ok) {
         setPublishError(null);
         navigate(`/post/${data.slug}`);
       }
     } catch (error) {
       setFileUploadError("Something went wrong");
+      console.error(error);
     }
   };
 
@@ -110,10 +112,11 @@ export default function CreatePost() {
           />
           <Select
             onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
+              setFormData({ ...formData, category: e.target.value })
             }
           >
-            <option value="uncategorized">Redux</option>
+            <option value="uncategorized">Select a category</option>
+            <option value="redux">Redux</option>
             <option value="javascript">Javascript</option>
             <option value="reactjs">ReactJS</option>
             <option value="nextjs">NextJS</option>

@@ -1,43 +1,53 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInFailure,
+  signInSuccess,
+} from "../redux/user/userSlice.js";
+import OAuth from "../Components/OAuth.jsx";
 
-export default function Signup() {
+export default function Signin() {
   const [formData, setFormData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState(null);
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
-  console.log(formData);
+  // console.log(formData);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      return setErrorMessage("Please fill out all fields");
+      // return setErrorMessage("Please fill out all fields");
+      return dispatch(signInFailure("Please fill all the fields"));
     }
     try {
-      setIsLoading(true);
-      setErrorMessage(null);
-      const res = await fetch("/api/auth/signin", {
+      // setIsLoading(true);
+      // setErrorMessage(null);
+      dispatch(signInStart());
+      const res = await fetch("/api/auth/signin/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       if (data.success === false) {
-        return setErrorMessage(data.message);
+        // return setErrorMessage(data.message);
+        dispatch(signInFailure(data.message));
       }
-      setIsLoading(false);
-      if (data.success === true) {
-        if (res.ok) {
-          navigate("/");
-        }
+      if (res.ok) {
+        dispatch(signInSuccess(data));
+        navigate("/");
       }
-      console.log(data);
     } catch (error) {
-      setErrorMessage(error.message);
-      setIsLoading(false);
+      // setErrorMessage(error.message);
+      // setIsLoading(false);
+      dispatch(signInFailure(error.message));
     }
   };
 
@@ -83,9 +93,9 @@ export default function Signup() {
             <Button
               gradientDuoTone="purpleToPink"
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
             >
-              {isLoading ? (
+              {loading ? (
                 <>
                   <Spinner size="sm" className="mx-auto" />
                   <span className="pl-3">Loading</span>
@@ -94,6 +104,7 @@ export default function Signup() {
                 "Sign In"
               )}
             </Button>
+            <OAuth />
           </form>
           <div className="flex-gap-2 text-sm mt-5">
             <span>Don't have an account ?</span>

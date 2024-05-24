@@ -6,6 +6,7 @@ dotenv.config();
 
 export async function signup(req, res) {
   const { username, email, password } = req.body;
+  console.log(req.user);
   try {
     const user = await userModel.findOne({ email });
 

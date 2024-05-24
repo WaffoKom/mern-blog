@@ -2,8 +2,7 @@ import { postModel } from "../models/post.model.js";
 
 export const create = async (req, res) => {
   // Vérifiez si l'utilisateur est un administrateur
-  const userId = req.user.id;
-  console.log(userId);
+
   if (!req.user.isAdmin) {
     return res.status(403).json("Vous n'êtes pas autorisé à créer un article");
   }
@@ -21,16 +20,14 @@ export const create = async (req, res) => {
     .replace(/[^a-zA-Z0-9-]/g, "-");
 
   // Créez une nouvelle instance du modèle de post
-  const newPost = new postModel({ ...req.body, slug, userId });
+  const newPost = new postModel({ ...req.body, slug, userId: req.user.id });
 
   try {
     // Sauvegardez le nouvel article dans la base de données
     const savedPost = await newPost.save();
-    res.status(201).send(savedPost);
+    res.status(201).json(savedPost);
   } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erreur interne", error: error.message });
+    res.status(404).json({ message: "Erreur interne", error: error.message });
   }
 };
 
@@ -77,6 +74,45 @@ export const getPosts = async (req, res) => {
       lastMonthPosts,
     });
   } catch (error) {
-    res.status(500).send({ message: "Intern Error", error: error.message });
+    return res
+      .status(404)
+      .json({ message: "Intern Error", error: error.message });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+    return res.status(403).json("You are not allowed to delete this post");
+  }
+  try {
+    await postModel.findByIdAndDelete(req.params.postId);
+    return res.status(200).json("Post has been deleted");
+  } catch (error) {
+    return res
+      .status(404)
+      .json({ message: "Intern Error", error: error.message });
+  }
+};
+
+export const updatePost = async (req, res) => {
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+    return res.status(403).json("You are not allowed ot update this post");
+  }
+  try {
+    const updatedPost = await postModel.findByIdAndUpdate(
+      req.params.postId,
+      {
+        $set: {
+          title: req.body.title,
+          content: req.body.content,
+          category: req.body.category,
+          image: req.body.image,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    res.status(404).send({ message: "Intern error", error: error.message });
   }
 };

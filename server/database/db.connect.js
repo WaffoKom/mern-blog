@@ -10,11 +10,10 @@ export async function connectToDB() {
     console.log("Connecté à la base de données MongoDB");
     return db;
   } catch (error) {
-    console.log({
+    return {
       message: "Erreur de connexion à la base de données :",
       error: error.message,
-    });
-    return error;
+    };
   }
 }
 
