@@ -75,7 +75,7 @@ export const getPosts = async (req, res) => {
     });
   } catch (error) {
     return res
-      .status(404)
+      .status(500)
       .json({ message: "Intern Error", error: error.message });
   }
 };
