@@ -9,7 +9,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
   const [user, setUser] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
-  console.log(user);
+  // console.log(user);
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -19,13 +19,13 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
           setUser(data);
         }
       } catch (error) {
-        throw error;
+        console.error(error);
       }
     };
 
     getUser();
   }, [comment]);
-  const handleEdit = async () => {
+  const handleEdit = () => {
     setIsEditing(true);
     setEditedContent(comment.content);
   };
@@ -47,6 +47,13 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
     } catch (error) {
       throw error;
     }
+  };
+  const handleLikeClick = () => {
+    onLike(comment._id);
+  };
+
+  const handleDeleteComment = () => {
+    onDelete(comment._id);
   };
   return (
     <div className="flex p-4 border-b dark:border-gray-600 text-sm ">
@@ -101,10 +108,10 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
                 className={`text-gray-400 hover:text-blue-500 ${
                   currentUser &&
                   comment.likes.includes(currentUser._id) &&
-                  "text-blue-500"
+                  "!text-blue-500"
                 }`}
                 type="button"
-                onClick={() => onLike(comment._id)}
+                onClick={handleLikeClick}
               >
                 <FaThumbsUp className="tex-sm" />
               </button>
@@ -126,7 +133,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
                     </button>
                     <button
                       type="button"
-                      onClick={() => onDelete(comment._id)}
+                      onClick={handleDeleteComment}
                       className="text-gray-400 hover:text-red-500"
                     >
                       Delete
