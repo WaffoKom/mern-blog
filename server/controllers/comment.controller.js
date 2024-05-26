@@ -64,26 +64,24 @@ export const getComments = async (req, res) => {
   }
 };
 
-export const likeComment = async (req, res) => {
+export const likeComment = async (req, res, next) => {
   try {
     const comment = await commentModel.findById(req.params.commentId);
     if (!comment) {
       return res.status(404).json("Comment not found");
     }
     const userIndex = comment.likes.indexOf(req.user.id);
-    if (!userIndex === -1) {
+    if (userIndex === -1) {
       comment.numberOfLikes += 1;
       comment.likes.push(req.user.id);
     } else {
-      comment.numberOfLikes -= 1;
+      comment.numberOfLikes += 1;
       comment.likes.splice(userIndex, 1);
     }
     await comment.save();
     res.status(200).json(comment);
   } catch (error) {
-    return res
-      .status(404)
-      .json({ message: "Intern Error", error: error.message });
+    res.status(404).json({ message: "Intern Error", error: error.message });
   }
 };
 
