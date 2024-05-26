@@ -87,7 +87,7 @@ export default function DashComments() {
               <Table.HeadCell>Delete</Table.HeadCell>
             </Table.Head>
             {comments.map((comment) => (
-              <Table.Body className="divide-y" key={user._id}>
+              <Table.Body className="divide-y" key={comment._id}>
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                   <Table.Cell>
                     {new Date(comment.updatedAt).toLocaleDateString()}
