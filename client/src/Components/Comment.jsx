@@ -45,7 +45,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
         onEdit(comment, editedContent);
       }
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   };
   const handleLikeClick = () => {
@@ -85,7 +85,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
                 type="button"
                 size="sm"
                 gradientDuoTone="purpleToBlue"
-                onClick={handleSave()}
+                onClick={handleSave}
               >
                 Save
               </Button>
