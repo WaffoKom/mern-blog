@@ -31,7 +31,7 @@ export const create = async (req, res) => {
   }
 };
 
-export const getPosts = async (req, res) => {
+export const getPosts = async (req, res, next) => {
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 9;
@@ -45,25 +45,24 @@ export const getPosts = async (req, res) => {
         ...(req.query.searchTerm && {
           $or: [
             { title: { $regex: req.query.searchTerm, $options: "i" } },
-            {
-              content: {
-                $regex: { $regex: req.query.searchTerm, $options: "i" },
-              },
-            },
+            { content: { $regex: req.query.searchTerm, $options: "i" } },
           ],
         }),
       })
       .sort({ updatedAt: sortDirection })
       .skip(startIndex)
       .limit(limit);
+
     const totalPosts = await postModel.countDocuments();
 
     const now = new Date();
+
     const oneMonthAgo = new Date(
       now.getFullYear(),
       now.getMonth() - 1,
       now.getDate()
     );
+
     const lastMonthPosts = await postModel.countDocuments({
       createdAt: { $gte: oneMonthAgo },
     });
@@ -74,9 +73,7 @@ export const getPosts = async (req, res) => {
       lastMonthPosts,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Intern Error", error: error.message });
+    res.status(404).json({ message: "Intern error", error: error.message });
   }
 };
 
