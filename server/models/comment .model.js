@@ -5,7 +5,7 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  posId: {
+  postId: {
     type: String,
     required: true,
   },
