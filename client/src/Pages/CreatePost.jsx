@@ -1,38 +1,36 @@
+import { Alert, Button, FileInput, Select, TextInput } from "flowbite-react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   getDownloadURL,
   getStorage,
-  uploadBytesResumable,
   ref,
+  uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase.js";
-import { FileInput, Select, TextInput, Button, Alert } from "flowbite-react";
-import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { useDispatch } from "react-redux";
+import { app } from "../firebase";
+import { useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useNavigate } from "react-router-dom";
 
 export default function CreatePost() {
-  const navigate = useNavigate();
   const [file, setFile] = useState(null);
-  const [fileUPloadProgress, setFileUploadProgress] = useState(null);
-  const [fileUPloadError, setFileUploadError] = useState(null);
+  const [imageUploadProgress, setImageUploadProgress] = useState(null);
+  const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [PublishError, setPublishError] = useState(null);
+  const [publishError, setPublishError] = useState(null);
 
-  // console.log(formData);
-  const handleUploadImage = async () => {
+  const navigate = useNavigate();
+
+  const handleUpdloadImage = async () => {
     try {
       if (!file) {
-        setFileUploadError("Please select an image");
+        setImageUploadError("Please select an image");
         return;
       }
-      setFileUploading(true);
-      setFileUploadError(null);
+      setImageUploadError(null);
       const storage = getStorage(app);
-      const fileName = `${file.name}-${new Date().getTime()}`;
+      const fileName = new Date().getTime() + "-" + file.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on(
@@ -40,40 +38,30 @@ export default function CreatePost() {
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setFileUploadProgress(progress.toFixed(0));
-          // console.log(`Upload is ${progress.toFixed(0)} done`);
+          setImageUploadProgress(progress.toFixed(0));
         },
         (error) => {
-          setFileUploadError(
-            "couldn't upload image (File must be less than 4MB)"
-          );
-          setFileUploadProgress(null);
-          setFile(null);
-
-          setFileUploading(false);
+          setImageUploadError("Image upload failed");
+          setImageUploadProgress(null);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setFileUploading(false);
-            setFileUploadProgress(null);
-            setFileUploadError(null);
+            setImageUploadProgress(null);
+            setImageUploadError(null);
             setFormData({ ...formData, image: downloadURL });
           });
         }
       );
     } catch (error) {
-      setFileUploadError({
-        message: "Image upload failed",
-        error: error.message,
-      });
-      setFileUploadProgress(null);
+      setImageUploadError("Image upload failed");
+      setImageUploadProgress(null);
       console.log(error);
     }
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/post/create/", {
+      const res = await fetch("/api/post/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,16 +73,15 @@ export default function CreatePost() {
         setPublishError(data.message);
         return;
       }
+
       if (res.ok) {
         setPublishError(null);
         navigate(`/post/${data.slug}`);
       }
     } catch (error) {
-      setFileUploadError("Something went wrong");
-      console.error(error);
+      setPublishError("Something went wrong");
     }
   };
-
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
@@ -115,9 +102,8 @@ export default function CreatePost() {
               setFormData({ ...formData, category: e.target.value })
             }
           >
-            <option value="uncategorized">Uncategorized</option>
-            <option value="redux">Redux</option>
-            <option value="javascript">Javascript</option>
+            <option value="uncategorized">Select a category</option>
+            <option value="javascript">JavaScript</option>
             <option value="reactjs">ReactJS</option>
             <option value="nextjs">NextJS</option>
           </Select>
@@ -133,22 +119,22 @@ export default function CreatePost() {
             gradientDuoTone="purpleToBlue"
             size="sm"
             outline
-            onClick={handleUploadImage}
-            disabled={fileUPloadProgress}
+            onClick={handleUpdloadImage}
+            disabled={imageUploadProgress}
           >
-            {fileUPloadProgress ? (
+            {imageUploadProgress ? (
               <div className="w-16 h-16">
                 <CircularProgressbar
-                  value={fileUPloadProgress}
-                  text={`${fileUPloadProgress || 0}%`}
+                  value={imageUploadProgress}
+                  text={`${imageUploadProgress || 0}%`}
                 />
               </div>
             ) : (
               "Upload Image"
             )}
           </Button>
-          {fileUPloadError && <Alert color="failure">{fileUPloadError}</Alert>}
         </div>
+        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
         {formData.image && (
           <img
             src={formData.image}
@@ -168,9 +154,9 @@ export default function CreatePost() {
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
-        {PublishError && (
+        {publishError && (
           <Alert className="mt-5" color="failure">
-            {PublishError}
+            {publishError}
           </Alert>
         )}
       </form>
