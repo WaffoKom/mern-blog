@@ -79,7 +79,8 @@ export default function CreatePost() {
         navigate(`/post/${data.slug}`);
       }
     } catch (error) {
-      setPublishError("Something went wrong");
+      setPublishError("Something wrong !");
+      console.log(error.message);
     }
   };
   return (

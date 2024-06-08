@@ -41,17 +41,16 @@ export async function signin(req, res) {
   const { email, password: userPassword } = req.body;
 
   try {
-    const user = await userModel.findOne({ email });
+    const validUser = await userModel.findOne({ email });
 
-    if (!user) {
+    if (!validUser) {
       res.status(400).send({ message: " user is not registered !" });
       return;
     }
-    const validPassword = await bcrypt.compare(userPassword, user.password);
+    const validPassword = await bcrypt.compare(userPassword, validUser.password);
     if (!validPassword) {
       return res.status(400).send({ message: "password is incorrect !" });
     }
-    const { password, ...rest } = user._doc;
 
     // const userWithoutPassword = {
     //   _id: user._id,
@@ -60,21 +59,19 @@ export async function signin(req, res) {
     //   // Autres propriétés de l'utilisateur que vous souhaitez inclure
     // };
     const token = jwt.sign(
-      { email: user.email, userId: user._id, isAdmin: user.isAdmin },
-      process.env.KEY,
-      {
-        expiresIn: "24h",
-      }
+      {id: validUser._id, isAdmin: validUser.isAdmin },
+      process.env.KEY
     );
 
+    const { password, ...rest } = validUser.toObject();
     res
       .status(200)
       .cookie("access_token", token, {
         httpOnly: true,
       })
-      .send({ message: "Login Successfull", user: rest });
+      .json(rest);
   } catch (error) {
-    res.status(500).send({
+    res.status(404).send({
       success: false,
       message: "Intern Error",
       error: error.message,
