@@ -28,7 +28,7 @@ export const getPostComments = async (req, res) => {
     res.status(200).json(comments);
   } catch (error) {
     return res
-      .status(404)
+      .status(400)
       .json({ message: "Intern Error", error: error.message });
   }
 };
@@ -60,7 +60,7 @@ export const getComments = async (req, res) => {
     });
     res.status(200).json({ comments, totalComments, lastMonthComments });
   } catch (error) {
-    next(error);
+    return res.status(400).json({message :"Intern error",error :error.message})
   }
 };
 
@@ -89,7 +89,7 @@ export const likeComment = async (req, res) => {
     await comment.save();
     res.status(200).json(comment);
   } catch (error) {
-    res.status(404).json({ message: "Intern Error", error: error.message });
+  return  res.status(400).json({ message: "Intern Error", error: error.message });
   }
 };
 
@@ -112,7 +112,7 @@ export const editComment = async (req, res) => {
     res.status(200).json(editedComment);
   } catch (error) {
     return res
-      .status(404)
+      .status(400)
       .json({ message: "Intern Error", error: error.message });
   }
 };
@@ -130,7 +130,7 @@ export const deleteComment = async (req, res) => {
     res.status(200).json("Comment has been deleted");
   } catch (error) {
     return res
-      .status(404)
+      .status(400)
       .json({ message: "Intern Error", error: error.message });
   }
 };

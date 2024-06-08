@@ -29,7 +29,7 @@ export async function signup(req, res) {
       .status(201)
       .send({ success: true, message: "Signup successful ...!" });
   } catch (error) {
-    return res.status(500).send({
+    return res.status(400).json({
       success: false,
       message: "Erreur interne",
       error: error.message,
@@ -71,7 +71,7 @@ export async function signin(req, res) {
       })
       .json(rest);
   } catch (error) {
-    res.status(404).send({
+    res.status(400).json({
       success: false,
       message: "Intern Error",
       error: error.message,
@@ -124,7 +124,7 @@ export async function google(req, res) {
     }
   } catch (error) {
     return res
-      .status(500)
-      .send({ message: "Intern error", error: error.message });
+      .status(400)
+      .json({ message: "Intern error", error: error.message });
   }
 }

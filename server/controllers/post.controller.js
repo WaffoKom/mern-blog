@@ -27,11 +27,11 @@ export const create = async (req, res) => {
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
   } catch (error) {
-    res.status(404).json({ message: "Erreur interne", error: error.message });
+  return  res.status(404).json({ message: "Erreur interne", error: error.message });
   }
 };
 
-export const getPosts = async (req, res, next) => {
+export const getPosts = async (req, res) => {
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 9;
@@ -73,7 +73,7 @@ export const getPosts = async (req, res, next) => {
       lastMonthPosts,
     });
   } catch (error) {
-    res.status(404).json({ message: "Intern error", error: error.message });
+  return  res.status(404).json({ message: "Intern error", error: error.message });
   }
 };
 
@@ -110,6 +110,6 @@ export const updatePost = async (req, res) => {
     );
     res.status(200).json(updatedPost);
   } catch (error) {
-    res.status(404).send({ message: "Intern error", error: error.message });
+   return res.status(404).send({ message: "Intern error", error: error.message });
   }
 };

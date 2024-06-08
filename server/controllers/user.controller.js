@@ -52,8 +52,8 @@ export async function updateUser(req, res) {
     res.status(200).send(rest);
   } catch (error) {
     return res
-      .status(500)
-      .send({ message: "Intern error", error: error.message });
+      .status(400)
+      .json({ message: "Intern error", error: error.message });
   }
 }
 
@@ -71,8 +71,8 @@ export const deleteUser = async (req, res) => {
     }
   } catch (error) {
     // Gérez les erreurs de manière appropriée
-    res
-      .status(500)
+   return res
+      .status(400)
       .json({ message: "Erreur interne du serveur", error: error.message });
   }
 };
@@ -84,7 +84,7 @@ export const signout = (req, res) => {
       .status(200)
       .json("User has been signed out");
   } catch (error) {
-    res.status(500).send({ message: "Intern Error", error: error.message });
+  return  res.status(400).json({ message: "Intern Error", error: error.message });
   }
 };
 
@@ -121,7 +121,7 @@ export const getUsers = async (req, res, next) => {
       .status(200)
       .json({ users: usersWithoutPassword, totalUsers, lastMonthUsers });
   } catch (error) {
-    next(error);
+    return res.status(400).json({message :"Intern error",  error: error.message})
   }
 };
 
@@ -134,6 +134,6 @@ export const getUser = async (req, res, next) => {
     const { password, ...rest } = user.toObject();
     res.status(200).json(rest);
   } catch (error) {
-    next(error);
+    return res.status(400).json({message :"Intern error", error :error.message});
   }
 };
