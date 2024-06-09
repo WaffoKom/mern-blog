@@ -73,7 +73,7 @@ export const getPosts = async (req, res) => {
       lastMonthPosts,
     });
   } catch (error) {
-  return  res.status(404).json({ message: "Intern error", error: error.message });
+  return  res.status(400).json({ message: "Intern error", error: error.message });
   }
 };
 

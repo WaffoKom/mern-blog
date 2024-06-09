@@ -88,7 +88,7 @@ export const signout = (req, res) => {
   }
 };
 
-export const getUsers = async (req, res, next) => {
+export const getUsers = async (req, res) => {
   if (!req.user.isAdmin) {
     return res.status(403).json("You are not allowed to see all users");
   }
@@ -125,7 +125,7 @@ export const getUsers = async (req, res, next) => {
   }
 };
 
-export const getUser = async (req, res, next) => {
+export const getUser = async (req, res) => {
   try {
     const user = await userModel.findById(req.params.userId);
     if (!user) {
