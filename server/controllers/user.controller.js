@@ -24,7 +24,7 @@ export async function updateUser(req, res) {
         .json("Username must be between 7 and 20 characters");
     }
   }
-  if (req.body.username.includes(" ")) {
+  if (req.body.username.includes(' ')) {
     return res.status(400).json("Username cannot contain spaces");
   }
   if (req.body.username !== req.body.username.toLowerCase()) {
@@ -40,16 +40,16 @@ export async function updateUser(req, res) {
       req.params.userId,
       {
         $set: {
+          profilePicture: req.body.profilePicture,
           username: req.body.username,
           email: req.body.email,
-          profilePicture: req.body.profilePicture,
           password: req.body.password,
         },
       },
       { new: true }
     );
     const { password, ...rest } = updatedUser.toObject();
-    res.status(200).send(rest);
+   return res.status(200).json(rest);
   } catch (error) {
     return res
       .status(400)

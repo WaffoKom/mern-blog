@@ -1,6 +1,6 @@
 import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
@@ -17,7 +17,7 @@ import {
   deleteUserFailure,
   signoutSuccess,
 } from "../redux/user/userSlice.js";
-import { useDispatch } from "react-redux";
+
 import { CircularProgressbar } from "react-circular-progressbar";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import "react-circular-progressbar/dist/styles.css";
@@ -52,17 +52,7 @@ export default function DashProfile() {
   }, [imageFile]);
   const uploadImage = async () => {
     console.log("File uploading...");
-    // rules_version = "2";
-    // service firebase.storage {
-    //   match /b/{bucket}/o {
-    //     match /{allPaths=**} {
-    //       allow read;
-    //       allow write: if
-    //       request.resource.size <4 * 1024 * 1024 &&
-    //       request.resource.contentType.matches('image/.*')
-    //     }
-    //   }
-    // }
+ 
     setImageFileUploading(true);
     setImageFileUploadError(null);
     const storage = getStorage(app);
@@ -80,11 +70,13 @@ export default function DashProfile() {
       (error) => {
         setImageFileUploadError(
           "couldn't upload image (File must be less than 4MB)"
+        
         );
         setImageFileUploadProgress(null);
         setImageFile(null);
         setImageFileUrl(null);
         setImageFileUploading(false);
+        console.log(error);
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -108,6 +100,7 @@ export default function DashProfile() {
     }
     if (imageFileUploading) {
       setImageFileUploadError("Please wait for image to upload");
+      return;
     }
     try {
       dispatch(updateStart());
