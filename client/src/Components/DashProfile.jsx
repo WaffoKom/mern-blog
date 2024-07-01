@@ -164,7 +164,7 @@ export default function DashProfile() {
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="file"
-          accept="iamage/*"
+          accept="image/*"
           onChange={handleImageChange}
           ref={filePickerRef}
           hidden
