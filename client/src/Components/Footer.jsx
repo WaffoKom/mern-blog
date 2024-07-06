@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Footer } from "flowbite-react";
 import { Link } from "react-router-dom";
 import {
@@ -87,8 +87,8 @@ export default function FooterComponent() {
             <Footer.Icon href="#" icon={BsFacebook} />
             <Footer.Icon href="#" icon={BsInstagram} />
             <Footer.Icon href="https://github.com/WaffoKom/" icon={BsGithub} />
-            <Footer.Icon href="#" icon={BsTwitterX} />
-            <Footer.Icon href="#" icon={BsLinkedin} />
+            <Footer.Icon href="https://x.com/DaniloWaff40563" icon={BsTwitterX} />
+            <Footer.Icon href="https://www.linkedin.com/in/daniel-kom-b4a861314/" icon={BsLinkedin} />
           </div>
         </div>
       </div>

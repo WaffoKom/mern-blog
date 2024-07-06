@@ -68,6 +68,7 @@ export default function UpdatePost() {
         (error) => {
           setImageUploadError("Image upload failed");
           setImageUploadProgress(null);
+          console.log(error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -107,7 +108,8 @@ export default function UpdatePost() {
         navigate(`/post/${data.slug}`);
       }
     } catch (error) {
-      setPublishError(data.message);
+    
+      setPublishError("Something went wrong");
       console.error(error);
     }
   };
