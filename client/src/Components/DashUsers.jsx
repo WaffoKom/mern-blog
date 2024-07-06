@@ -1,5 +1,5 @@
 import { Table } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, Modal } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -21,7 +21,7 @@ export default function DashUsers() {
         if (res.ok) {
           setUsers(data.users);
           if (data.users.length < 5) {
-            setshowMore(false);
+            setShowMore(false);
           }
         }
       } catch (error) {
@@ -32,7 +32,7 @@ export default function DashUsers() {
     if (currentUser.isAdmin) {
       fetchUsers();
     }
-  }, [currentUser._id]);
+  }, [currentUser._id, currentUser.isAdmin]);
 
   const handleShowMore = async () => {
     const startIndex = users.length;
@@ -142,7 +142,7 @@ export default function DashUsers() {
             </h3>
             <div className="flex justify-center gap-4">
               <Button color="failure" onClick={handleDeleteUser}>
-                Yes, I'm sure
+                Yes, Ia m sure
               </Button>
               <Button color="gray" onClick={() => setshowModal(false)}>
                 No, cancel

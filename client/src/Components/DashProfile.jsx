@@ -1,5 +1,5 @@
 import { Alert, Button, Modal, TextInput } from "flowbite-react";
-import React, { useState, useRef, useEffect } from "react";
+import  { useState, useRef, useEffect } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import {
   getDownloadURL,
@@ -32,7 +32,7 @@ export default function DashProfile() {
   const [imageFileUploading, setImageFileUploading] = useState(false);
   const [updateUserSuccess, setUpdateUsersSuccess] = useState(null);
   const [updateuserError, setUpdateUsersError] = useState(null);
-  const [updateUserLoading, setUpdateUserLoading] = useState(false);
+  // const [updateUserLoading, setUpdateUserLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   // console.log(imageFileUPloadProgress, imageFileUPloadError);
   const filePickerRef = useRef();
@@ -47,9 +47,11 @@ export default function DashProfile() {
   };
   useEffect(() => {
     if (imageFile) {
-      uploadImage();
+      
+     uploadImage()
+    
     }
-  }, [imageFile]);
+  },[imageFile]);
   const uploadImage = async () => {
     console.log("File uploading...");
  
@@ -87,6 +89,8 @@ export default function DashProfile() {
       }
     );
   };
+
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -290,7 +294,7 @@ export default function DashProfile() {
             </h3>
             <div className="flex justify-center gap-4">
               <Button color="failure" onClick={handleDeleteUser}>
-                Yes, I'm sure
+                Yes, I am sure
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>
                 No, cancel
