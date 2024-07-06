@@ -32,10 +32,11 @@ export default function DashPosts() {
     if (currentUser.isAdmin) {
       fetchPosts();
     }
-  }, [currentUser._id]);
+  }, [currentUser._id,currentUser.isAdmin]);
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
+    // eslint-disable-next-line no-useless-catch
     try {
       const res = await fetch(
         `/api/post/getPosts?userId=${currentUser._id}&startIndex=${startIndex}`
@@ -53,6 +54,7 @@ export default function DashPosts() {
   };
   const handleDeletePost = async () => {
     setshowModal(false);
+    // eslint-disable-next-line no-useless-catch
     try {
       const res = await fetch(
         `/api/post/deletePost/${postIdToDelete}/${currentUser._id}`,
@@ -161,7 +163,7 @@ export default function DashPosts() {
             </h3>
             <div className="flex justify-center gap-4">
               <Button color="failure" onClick={handleDeletePost}>
-                Yes, I'm sure
+                Yes, I a m sure
               </Button>
               <Button color="gray" onClick={() => setshowModal(false)}>
                 No, cancel
