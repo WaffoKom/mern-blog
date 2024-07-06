@@ -6,54 +6,78 @@ export const test = (req, res) => {
 };
 
 export async function updateUser(req, res) {
+  // Vérifier que l'utilisateur courant est autorisé à mettre à jour cet utilisateur
   if (req.user.id !== req.params.userId) {
-    return res.status(403).json("You are not allowed to update this user");
+    return res
+      .status(403)
+      .json({ error: "You are not allowed to update this user" });
   }
 
-  if (req.body.password) {
-    if (body.password.length < 6) {
-      return res.status(400).json("Password must be at least 6 characters");
+  // Récupérer les données à mettre à jour
+  const { username, email, password, profilePicture } = req.body;
+
+  const updateData = {};
+
+  // Mettre à jour le nom d'utilisateur si fourni
+  if (username) {
+    if (
+      typeof username !== "string" ||
+      username.length < 7 ||
+      username.length > 20
+    ) {
+      return res.status(400).json({
+        error: "Username must be a string between 7 and 20 characters",
+      });
     }
-    req.body.password = bcrypt.hash(req.body.password, 10);
-  }
-
-  if (req.body.username) {
-    if (req.body.username.length < 7 || req.body.username.length > 20) {
+    updateData.username = username.trim().toLowerCase().replace(/\s+/g, "");
+    if (!/^[a-zA-Z0-9]+$/.test(updateData.username)) {
       return res
         .status(400)
-        .json("Username must be between 7 and 20 characters");
+        .json({ error: "Username must contain only letters and numbers" });
     }
   }
-  if (req.body.username.includes(' ')) {
-    return res.status(400).json("Username cannot contain spaces");
+
+  // Mettre à jour l'e-mail si fourni
+  if (email) {
+    if (typeof email !== "string" || !/.+@.+\..+/.test(email)) {
+      return res.status(400).json({ error: "Invalid email address" });
+    }
+    updateData.email = email;
   }
-  if (req.body.username !== req.body.username.toLowerCase()) {
-    return res.status(400).json("Username must be lowercase");
+
+  // Mettre à jour le mot de passe si fourni
+  if (password) {
+    if (typeof password !== "string" || password.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "Password must be a string of at least 6 characters" });
+    }
+    updateData.password = await bcrypt.hash(password, 10);
   }
-  if (!req.body.username.match(/^[a-zA-Z0-9]+$/)) {
-    return res
-      .status(400)
-      .json("Username must be contain only letters  and numbers");
+
+  // Mettre à jour la photo de profil si fournie
+  if (profilePicture) {
+    updateData.profilePicture = profilePicture;
   }
+
   try {
     const updatedUser = await userModel.findByIdAndUpdate(
       req.params.userId,
-      {
-        $set: {
-          profilePicture: req.body.profilePicture,
-          username: req.body.username,
-          email: req.body.email,
-          password: req.body.password,
-        },
-      },
-      { new: true }
+      { $set: updateData },
+      { new: true, runValidators: true }
     );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     const { password, ...rest } = updatedUser.toObject();
-   return res.status(200).json(rest);
+    return res.status(200).json(rest);
   } catch (error) {
+    console.error(error);
     return res
-      .status(400)
-      .json({ message: "Intern error", error: error.message });
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 }
 
@@ -71,7 +95,7 @@ export const deleteUser = async (req, res) => {
     }
   } catch (error) {
     // Gérez les erreurs de manière appropriée
-   return res
+    return res
       .status(400)
       .json({ message: "Erreur interne du serveur", error: error.message });
   }
@@ -84,7 +108,9 @@ export const signout = (req, res) => {
       .status(200)
       .json("User has been signed out");
   } catch (error) {
-  return  res.status(400).json({ message: "Intern Error", error: error.message });
+    return res
+      .status(400)
+      .json({ message: "Intern Error", error: error.message });
   }
 };
 
@@ -121,7 +147,9 @@ export const getUsers = async (req, res) => {
       .status(200)
       .json({ users: usersWithoutPassword, totalUsers, lastMonthUsers });
   } catch (error) {
-    return res.status(400).json({message :"Intern error",  error: error.message})
+    return res
+      .status(400)
+      .json({ message: "Intern error", error: error.message });
   }
 };
 
@@ -134,6 +162,8 @@ export const getUser = async (req, res) => {
     const { password, ...rest } = user.toObject();
     res.status(200).json(rest);
   } catch (error) {
-    return res.status(400).json({message :"Intern error", error :error.message});
+    return res
+      .status(400)
+      .json({ message: "Intern error", error: error.message });
   }
 };
