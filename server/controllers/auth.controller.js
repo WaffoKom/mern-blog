@@ -47,7 +47,10 @@ export async function signin(req, res) {
       res.status(400).send({ message: " user is not registered !" });
       return;
     }
-    const validPassword = await bcrypt.compare(userPassword, validUser.password);
+    const validPassword = await bcrypt.compare(
+      userPassword,
+      validUser.password
+    );
     if (!validPassword) {
       return res.status(400).send({ message: "password is incorrect !" });
     }
@@ -59,7 +62,7 @@ export async function signin(req, res) {
     //   // Autres propriétés de l'utilisateur que vous souhaitez inclure
     // };
     const token = jwt.sign(
-      {id: validUser._id, isAdmin: validUser.isAdmin },
+      { id: validUser._id, isAdmin: validUser.isAdmin },
       process.env.KEY
     );
 
