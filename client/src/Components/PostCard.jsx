@@ -1,6 +1,5 @@
-import React from "react";
 import { Link } from "react-router-dom";
-
+// eslint-disable-next-line react/prop-types
 export default function PostCard({ post }) {
   return (
     <div className="group relative w-full border h-[400px] hover:border-2 border-teal-500 overflow-hidden rounded-lg sm:w-[430px] transition-all">

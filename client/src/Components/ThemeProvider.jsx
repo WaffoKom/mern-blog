@@ -1,7 +1,5 @@
 import { useSelector } from "react-redux";
 
-import React from "react";
-
 export default function ThemeProvider({ children }) {
   const { theme } = useSelector((state) => state.theme);
   return (
