@@ -98,12 +98,6 @@ export const deletePost = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   try {
-    // Validate the input data
-    const { error } = validatePostUpdate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
-
     // Check if the user is authorized to update the post
     if (!req.user.isAdmin && req.user.id !== req.params.userId) {
       return res
@@ -124,7 +118,6 @@ export const updatePost = async (req, res) => {
     post.content = req.body.content;
     post.category = req.body.category;
     post.image = req.body.image;
-    post.updatedAt = new Date();
 
     // Save the updated post
     const updatedPost = await post.save();
@@ -132,22 +125,10 @@ export const updatePost = async (req, res) => {
     // Return the updated post
     res.status(200).json(updatedPost);
   } catch (error) {
-    // Handle any errors that may occur during the update process
+    // Handle any errors that occur during the update process
     console.error(error);
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
 };
-
-// Function to validate the input data
-function validatePostUpdate(data) {
-  const schema = Joi.object({
-    title: Joi.string().min(3).max(100).required(),
-    content: Joi.string().min(10).required(),
-    category: Joi.string().required(),
-    image: Joi.string().uri().required(),
-  });
-
-  return schema.validate(data);
-}

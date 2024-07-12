@@ -13,6 +13,7 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom";
 
+
 export default function CreatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
@@ -43,6 +44,7 @@ export default function CreatePost() {
         (error) => {
           setImageUploadError("Image upload failed");
           setImageUploadProgress(null);
+          console.log(error)
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {

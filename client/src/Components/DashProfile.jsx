@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import  { useState, useRef, useEffect } from "react";
 import { useSelector,useDispatch } from "react-redux";
@@ -51,7 +52,7 @@ export default function DashProfile() {
      uploadImage()
     
     }
-  },[imageFile]);
+  },[imageFile,]);
   const uploadImage = async () => {
     console.log("File uploading...");
  

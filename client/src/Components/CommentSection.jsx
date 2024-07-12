@@ -1,10 +1,11 @@
-import { Alert, Button, Modal, TextInput, Textarea } from 'flowbite-react';
+import { Alert, Button, Modal,  Textarea } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Comment from './Comment.jsx';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
+// eslint-disable-next-line react/prop-types
 export default function CommentSection({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
   const [comment, setComment] = useState('');
@@ -105,6 +106,7 @@ export default function CommentSection({ postId }) {
       if (res.ok) {
         const data = await res.json();
         setComments(comments.filter((comment) => comment._id !== commentId));
+        console.log(data);
       }
     } catch (error) {
       console.log(error.message);
@@ -204,7 +206,7 @@ export default function CommentSection({ postId }) {
                 color='failure'
                 onClick={() => handleDelete(commentToDelete)}
               >
-                Yes, I'm sure
+                Yes I a m sure
               </Button>
               <Button color='gray' onClick={() => setShowModal(false)}>
                 No, cancel
