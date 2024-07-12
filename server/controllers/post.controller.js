@@ -1,4 +1,5 @@
 import { postModel } from "../models/post.model.js";
+import Joi from "joi";
 
 export const create = async (req, res) => {
   // Vérifiez si l'utilisateur est un administrateur
@@ -27,7 +28,9 @@ export const create = async (req, res) => {
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
   } catch (error) {
-  return  res.status(404).json({ message: "Erreur interne", error: error.message });
+    return res
+      .status(404)
+      .json({ message: "Erreur interne", error: error.message });
   }
 };
 
@@ -73,7 +76,9 @@ export const getPosts = async (req, res) => {
       lastMonthPosts,
     });
   } catch (error) {
-  return  res.status(400).json({ message: "Intern error", error: error.message });
+    return res
+      .status(400)
+      .json({ message: "Intern error", error: error.message });
   }
 };
 
@@ -92,24 +97,57 @@ export const deletePost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-    return res.status(403).json("You are not allowed ot update this post");
-  }
   try {
-    const updatedPost = await postModel.findByIdAndUpdate(
-      req.params.postId,
-      {
-        $set: {
-          title: req.body.title,
-          content: req.body.content,
-          category: req.body.category,
-          image: req.body.image,
-        },
-      },
-      { new: true }
-    );
+    // Validate the input data
+    const { error } = validatePostUpdate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    // Check if the user is authorized to update the post
+    if (!req.user.isAdmin && req.user.id !== req.params.userId) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this post" });
+    }
+
+    // Find the post to be updated
+    const post = await postModel.findById(req.params.postId);
+
+    // If the post is not found, return an error
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Update the post with the new data
+    post.title = req.body.title;
+    post.content = req.body.content;
+    post.category = req.body.category;
+    post.image = req.body.image;
+    post.updatedAt = new Date();
+
+    // Save the updated post
+    const updatedPost = await post.save();
+
+    // Return the updated post
     res.status(200).json(updatedPost);
   } catch (error) {
-   return res.status(404).send({ message: "Intern error", error: error.message });
+    // Handle any errors that may occur during the update process
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
+
+// Function to validate the input data
+function validatePostUpdate(data) {
+  const schema = Joi.object({
+    title: Joi.string().min(3).max(100).required(),
+    content: Joi.string().min(10).required(),
+    category: Joi.string().required(),
+    image: Joi.string().uri().required(),
+  });
+
+  return schema.validate(data);
+}
