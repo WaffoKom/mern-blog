@@ -17,7 +17,7 @@ import Search from "./Pages/Search.jsx";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_relativeSplatPath: true }}>
       <ScrollToTop />
       <Header />
       <Routes>

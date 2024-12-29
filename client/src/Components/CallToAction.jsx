@@ -1,7 +1,8 @@
 import { Button } from "flowbite-react";
-import React, { forwardRef, useEffect } from "react";
+import { forwardRef } from "react";
+import { Link } from "react-router-dom";
 
-export const CallToAction = forwardRef((props, ref) => {
+const CallToAction = forwardRef((props, ref) => {
   return (
     <div className="flex flex-col sm:flex-row p-3 border border-teal-500 justify-center items-center rounded-tl-3xl rounded-br-3xl text-center">
       <div className="flex-1 justify-center flex flex-col">
@@ -13,14 +14,14 @@ export const CallToAction = forwardRef((props, ref) => {
           gradientDuoTone="purpleToPink"
           className="rounded-tl-xl rounded-bl-none"
         >
-          <a
-            href="https://github.com/WaffoKom/"
+          <Link
+            to="https://github.com/WaffoKom/"
             target="_blank"
             rel="noopener noreferrer"
             ref={ref}
           >
             My Github page
-          </a>
+          </Link>
         </Button>
       </div>
       <div className="p-7 flex-1">
@@ -32,3 +33,7 @@ export const CallToAction = forwardRef((props, ref) => {
     </div>
   );
 });
+
+CallToAction.displayName = "CallToAction";
+
+export { CallToAction };

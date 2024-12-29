@@ -1,11 +1,11 @@
 import { CallToAction } from "../Components/CallToAction.jsx";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Projects() {
   const customButtonRef = useRef(null);
   useEffect(() => {
     if (customButtonRef.current) {
-      console.log(customButtonRef.current);
+      // console.log(customButtonRef.current);
     }
   }, []);
   return (

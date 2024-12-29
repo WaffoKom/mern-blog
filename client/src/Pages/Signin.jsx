@@ -32,7 +32,7 @@ export default function Signin() {
       dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
@@ -61,7 +61,7 @@ export default function Signin() {
             className="sm:text-txt-xl font-bold dark:text-white text-4xl"
           >
             <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-              Isis's
+              Isis&apos;s
             </span>
             Blog
           </Link>
@@ -107,7 +107,7 @@ export default function Signin() {
             <OAuth />
           </form>
           <div className="flex-gap-2 text-sm mt-5">
-            <span>Don't have an account ?</span>
+            <span>Don&apos;t have an account ?</span>
             <Link to="/signup" className="text-blue-500">
               Sign Up
             </Link>

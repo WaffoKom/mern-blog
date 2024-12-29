@@ -1,5 +1,5 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Signup() {
@@ -51,7 +51,7 @@ export default function Signup() {
             className="sm:text-txt-xl font-bold dark:text-white text-4xl"
           >
             <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-              Isis's
+              Isis&apos;s
             </span>
             Blog
           </Link>
