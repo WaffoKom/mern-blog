@@ -3,11 +3,8 @@ import { AiFillGoogleCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../firebase.js";
-import { useDispatch} from "react-redux";
-import {
-
-  signInSuccess,
-} from "../redux/user/userSlice.js";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "../redux/user/userSlice.js";
 export default function OAuth() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -45,9 +42,7 @@ export default function OAuth() {
       onClick={handleGoogleClick}
     >
       <AiFillGoogleCircle className="w-6 h-6 mr-2" />
-      Contirnue with Google
+      Continue with Google
     </Button>
   );
 }
-
-
