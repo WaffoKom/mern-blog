@@ -4,6 +4,7 @@ import { authRoutes } from "./routes/auth.route.js";
 import { postRoutes } from "./routes/post.route.js";
 import { commentRoutes } from "./routes/comment.route.js";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 
 import express from "express";
 import dotenv from "dotenv";
@@ -12,6 +13,7 @@ import cors from "cors";
 dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(helmet());
 const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -20,7 +22,10 @@ app.use(
     credentials: true,
   })
 );
-
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  next();
+});
 app.use(cookieParser());
 async function main() {
   // ... (Code de configuration de l'application)

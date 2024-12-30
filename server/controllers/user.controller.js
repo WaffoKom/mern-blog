@@ -29,20 +29,22 @@ export async function updateUser(req, res) {
         error: "Username must be a string between 7 and 20 characters",
       });
     }
-    updateData.username = username.trim().toLowerCase().replace(/\s+/g, "");
-    if (!/^[a-zA-Z0-9]+$/.test(updateData.username)) {
+    const trimmedUsername = username.trim().toLowerCase().replace(/\s+/g, "");
+    if (!/^[a-zA-Z0-9]+$/.test(trimmedUsername)) {
       return res
         .status(400)
         .json({ error: "Username must contain only letters and numbers" });
     }
+    updateData.username = trimmedUsername;
   }
 
   // Mettre à jour l'e-mail si fourni
   if (email) {
-    if (typeof email !== "string" || !/.+@.+\..+/.test(email)) {
+    const trimmedEmail = email.trim();
+    if (typeof email !== "string" || !/.+@.+\..+/.test(trimmedEmail)) {
       return res.status(400).json({ error: "Invalid email address" });
     }
-    updateData.email = email;
+    updateData.email = trimmedEmail;
   }
 
   // Mettre à jour le mot de passe si fourni

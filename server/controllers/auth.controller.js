@@ -44,8 +44,7 @@ export async function signin(req, res) {
     const validUser = await userModel.findOne({ email });
 
     if (!validUser) {
-      res.status(400).send({ message: " user is not registered !" });
-      return;
+      return res.status(400).send({ message: " user is not registered !" });
     }
     const validPassword = await bcrypt.compare(
       userPassword,
@@ -55,12 +54,6 @@ export async function signin(req, res) {
       return res.status(400).send({ message: "password is incorrect !" });
     }
 
-    // const userWithoutPassword = {
-    //   _id: user._id,
-    //   email: user.email,
-    //   username: user.username,
-    //   // Autres propriétés de l'utilisateur que vous souhaitez inclure
-    // };
     const token = jwt.sign(
       { id: validUser._id, isAdmin: validUser.isAdmin },
       process.env.KEY

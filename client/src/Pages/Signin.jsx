@@ -36,11 +36,10 @@ export default function Signin() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (data.success === false) {
+      if (!res.ok) {
         // return setErrorMessage(data.message);
-        dispatch(signInFailure(data.message));
-      }
-      if (res.ok) {
+        dispatch(signInFailure(data.message || "Sign-in Failed"));
+      } else {
         dispatch(signInSuccess(data));
         navigate("/");
       }
