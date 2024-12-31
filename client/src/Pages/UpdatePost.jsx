@@ -34,8 +34,7 @@ export default function UpdatePost() {
           console.log(data.message);
           setPublishError(data.message);
           return;
-        }
-        if (res.ok) {
+        } else {
           setPublishError(null);
           setFormData(data.posts[0]);
         }
@@ -108,7 +107,6 @@ export default function UpdatePost() {
         navigate(`/post/${data.slug}`);
       }
     } catch (error) {
-    
       setPublishError("Something went wrong");
       console.error(error);
     }
