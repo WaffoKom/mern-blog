@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: [process.env.HOST],
+    origin: ["https://mern-blog-front-end.vercel.app"],
     methods: ["POST", "GET"],
     credentials: true,
   })
@@ -39,9 +39,9 @@ async function main() {
   await connectToDB();
   // ... (Démarrage du serveur)
 
-  app.listen(PORT, () =>
-    console.log(`Connexion etablit avec succes au port ${PORT}`)
-  );
+  // app.listen(PORT, () =>
+  //   console.log(`Connexion etablit avec succes au port ${PORT}`)
+  // );
 }
 
 main();
