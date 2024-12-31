@@ -83,8 +83,14 @@ export default function FooterComponent() {
             year={new Date().getFullYear()}
           />
           <div className="flex gap-6 sm:mt-0 mt-4 sm:justify-center">
-            <Footer.Icon href="#" icon={BsFacebook} />
-            <Footer.Icon href="#" icon={BsInstagram} />
+            <Footer.Icon
+              href="https://web.facebook.com/mbolle.eric"
+              icon={BsFacebook}
+            />
+            <Footer.Icon
+              href="https://www.instagram.com/danilowaffis/"
+              icon={BsInstagram}
+            />
             <Footer.Icon href="https://github.com/WaffoKom/" icon={BsGithub} />
             <Footer.Icon
               href="https://x.com/DaniloWaff40563"
