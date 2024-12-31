@@ -39,9 +39,9 @@ async function main() {
   await connectToDB();
   // ... (Démarrage du serveur)
 
-  // app.listen(PORT, () =>
-  //   console.log(`Connexion etablit avec succes au port ${PORT}`)
-  // );
+  app.listen(PORT, () =>
+    console.log(`Connexion etablit avec succes au port ${PORT}`)
+  );
 }
 
 main();
