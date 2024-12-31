@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["https://mern-blog-front-end.vercel.app"],
+    origin: [process.env.HOST],
     methods: ["POST", "GET"],
     credentials: true,
   })
