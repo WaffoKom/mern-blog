@@ -43,7 +43,5 @@ async function main() {
     console.log(`Connexion etablit avec succes au port ${PORT}`)
   );
 }
-
-main();
-
 export default app;
+main();
