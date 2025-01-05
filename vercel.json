@@ -16,7 +16,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server/index.js"
+      "dest": "https://mern-blog-api-ten.vercel.app/api/$1"
     },
     {
       "src": "/(.*)",
