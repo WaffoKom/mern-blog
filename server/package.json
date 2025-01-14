@@ -10,7 +10,7 @@
     "dev": "nodemon  index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "DaniloWaffis",
   "license": "ISC",
   "dependencies": {
     "cookie-parser": "^1.4.6",
