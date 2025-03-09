@@ -29,6 +29,9 @@ async function main() {
   app.use("/api/auth", authRoutes);
   app.use("/api/post", postRoutes);
   app.use("/api/comment", commentRoutes);
+  app.use("/", (req, res) => {
+    res.status(200).json("Hello world");
+  });
 
   await connectToDB();
   // ... (Démarrage du serveur)
