@@ -16,13 +16,7 @@ app.use(express.json());
 app.use(helmet());
 const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: [process.env.HOST],
-    methods: ["POST", "GET", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({ origin: "*" }));
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   next();
